@@ -4,15 +4,15 @@ pragma solidity ^0.4.24;
 
 contract LuckyList {
     
-    // You know, at some point we'll do some fancy curved token bonding here
     address owner;
     uint price = 40000000000000000;
+    uint priceIncrease = 40000000000000000;
     uint list_max = 100;
 
     uint current_index = 0;
     bool wrapped = false;
-    address[] keys = new address[](100);
-    mapping(address => Lucky) luckyByAddress; 
+    address[] public keys = new address[](100);
+    mapping(address => Lucky) public luckyByAddress; 
 
     constructor() public {
         owner = msg.sender;
@@ -29,9 +29,6 @@ contract LuckyList {
         if (owner != msg.sender)
         {
             require(msg.value >= price, "Couldn't add because you underpaid");
-        }
-        else
-        {
             price += 40000000000000000;
         }
         Lucky memory newLucky = Lucky(_address, _name, _logo_ipfs);
@@ -39,7 +36,7 @@ contract LuckyList {
         luckyByAddress[_address] = newLucky;
         //add address to keys LUT
         keys[current_index] = _address;
-        price += 40000000000000000;
+        price += priceIncrease;
         //increase the indexer
         current_index += 1;
         if (current_index >= list_max)
