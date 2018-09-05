@@ -4,6 +4,27 @@ pragma solidity ^0.4.24;
 // TODO separate store into another contract
 
 contract MetaDataStorage {
+
+    address owner;
+
+    uint current_index = 0;
+    address[] public keys;
+    mapping(address => MetaData) public adresses;
+
+    struct MetaData {
+        address _address;
+        string _name;
+        string _ipfs;
+        //blockno
+    }  
+
+    constructor(address _owner) public {
+        owner = _owner;
+    }
+
+}
+
+contract MetaDataController {
     
     address owner;
     uint price = 10000000000000000;
@@ -12,10 +33,10 @@ contract MetaDataStorage {
     address[] public keys;
     mapping(address => MetaData) public adresses; 
 
-    event SetData {
-        address _address;
-        string _logo_ipfs;
-    }
+    event SetData (
+        address _address,
+        string _logo_ipfs
+    );
 
     constructor() public {
         owner = msg.sender;
@@ -51,7 +72,7 @@ contract MetaDataStorage {
         keys.push(_address);
         //increase the indexer
         current_index += 1;
-        SetData(_address,_logo_ipfs);
+        emit SetData(_address,_logo_ipfs);
     }
 
     // This is to let the owner remove information about his address that he doesn't like, receives a small refund for his efforts and the sad fact that he's not on the list anymore
@@ -86,5 +107,5 @@ contract MetaDataStorage {
     {
         return price;
     }
-    
+  
 }
