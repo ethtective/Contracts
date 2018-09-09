@@ -12,10 +12,10 @@ contract MetaDataStorage {
     address[] public keys;
     mapping(address => MetaData) public adresses; 
 
-    event SetData {
-        address _address;
-        string _logo_ipfs;
-    }
+    event SetData (
+        address _address,
+        string _logo_ipfs
+    );
 
     constructor() public {
         owner = msg.sender;

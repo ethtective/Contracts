@@ -11,7 +11,7 @@ contract LuckyList {
 
     uint current_index = 0;
     bool wrapped = false;
-    address[] public keys = new address[](100);
+    address[] public keys;
     mapping(address => Lucky) public luckyByAddress; 
 
     constructor() public {
@@ -20,37 +20,45 @@ contract LuckyList {
     
     struct Lucky {
         address _address;
-        string _name;
-        string _logo_ipfs;
+        bool exists;
+        bool removed;
     }  
     
     // Add yourself to Ze List Of AweZome! (buy the Dank Mono Font by the way, disclaimer: I am just a user of the font but it has the most porno Z of all programming fonts in existenZ)
-    function addAddress(address _address, string _name, string _logo_ipfs) public payable returns(string) {
-        if (owner != msg.sender)
-        {
-            require(msg.value >= price, "Couldn't add because you underpaid");
-            price += 40000000000000000;
-        }
-        Lucky memory newLucky = Lucky(_address, _name, _logo_ipfs);
+    function addAddress(address _address) public payable returns(string) {
+        require(msg.value >= price, "Couldn't add because you underpaid.");
+        require(luckyByAddress[_address].exists != true, "Come on, you already submitted.");
         //we have a new lucky
-        luckyByAddress[_address] = newLucky;
-        //add address to keys LUT
-        keys[current_index] = _address;
         price += priceIncrease;
-        //increase the indexer
-        current_index += 1;
-        if (current_index >= list_max)
+        addInternal(_address);
+        return "You are now on the lucky list!";
+    }
+    
+    
+    // Add yourself to Ze List Of AweZome! (buy the Dank Mono Font by the way, disclaimer: I am just a user of the font but it has the most porno Z of all programming fonts in existenZ)
+    function addAddressAdmin(address[] _addresses) public payable returns(string) {
+        assert(msg.sender == owner);
+        for(uint i = 0; i < _addresses.length; i++)
         {
-            current_index = 0;
-            wrapped = true;
+            addInternal(_addresses[i]);
         }
         return "You are now on the lucky list!";
     }
     
+    function addInternal(address _address) private {
+        Lucky memory newLucky = Lucky(_address, true, false);
+        luckyByAddress[_address] = newLucky;
+        keys.push(_address);
+        //increase the indexer
+        current_index += 1;
+    }
 
-    // This is to let the owner remove information about his address that he doesn't like, receives a small refund for his efforts and the sad fact that he's not on the list anymore
+    // This is to let the owner remove information about his address that he doesn't like
     function getMeOffTheFuckingList() public {
-        delete luckyByAddress[msg.sender];
+        if (luckyByAddress[msg.sender].exists == true)
+        {
+              luckyByAddress[msg.sender].removed = true;
+        }
         //we could fix the array now, but we don't give a fuck
         //we just want to get him off the motherfucking list
     }
@@ -62,14 +70,14 @@ contract LuckyList {
         msg.sender.transfer(address(this).balance);
     }
     
-    function getLucky(uint i) public view returns(address, string, string) 
+    function getLucky(uint i) public view returns(address) 
     {
-        return (luckyByAddress[keys[i]]._address, luckyByAddress[keys[i]]._name, luckyByAddress[keys[i]]._logo_ipfs);
+        return (luckyByAddress[keys[i]]._address);
     }
     
-    function getAddress(address a) public view returns(address, string, string) 
+    function getAddress(address a) public view returns(address) 
     {
-        return (luckyByAddress[a]._address, luckyByAddress[a]._name, luckyByAddress[a]._logo_ipfs);
+        return (luckyByAddress[a]._address);
     }
     
     function setPrice(uint _price) public
@@ -78,9 +86,9 @@ contract LuckyList {
         price = _price;
     }
     
-    function getIndexAndLength() public view returns(uint, bool) 
+    function getIndex() public view returns(uint) 
     {
-        return (current_index, wrapped);
+        return current_index;
     }
     
     function getPrice() public view returns(uint)
