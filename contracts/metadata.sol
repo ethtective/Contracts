@@ -39,9 +39,12 @@ contract MetaDataStorage {
         addInternal(_address, _name, _logo_ipfs);
     }
     
-    //function addMultiple(address[] _address, string[] _name, string[] _logo_ipfs) public {
-        
-    //}
+    // function addMultiple(address[] _addresses, string[] _names, string[] _hashes) public {
+    //     assert(msg.sender == owner);
+    //     for(uint i = 0; i < _addresses.length; i++) {
+    //         addInternal(_addresses[i],_names[i],_hashes[i]);
+    //     }
+    // }
 
     function addInternal(address _address, string _name, string _logo_ipfs) private {
         MetaData memory newData = MetaData(_address, _name, _logo_ipfs);
@@ -51,7 +54,13 @@ contract MetaDataStorage {
         keys.push(_address);
         //increase the indexer
         current_index += 1;
-        SetData(_address,_logo_ipfs);
+        emit SetData(_address,_logo_ipfs);
+    }
+
+    // This is to let the owner remove information about his address that he doesn't like, receives a small refund for his efforts and the sad fact that he's not on the list anymore
+    function removeAddress(address _address) public {
+        assert(msg.sender == owner);
+        delete adresses[_address];
     }
 
     // This is to let the owner remove information about his address that he doesn't like, receives a small refund for his efforts and the sad fact that he's not on the list anymore
