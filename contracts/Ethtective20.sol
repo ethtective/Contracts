@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
 // This is the Ethtective MetaData Cafe contract, add your own metametametadata at http://cafe.ethtective.com
 
